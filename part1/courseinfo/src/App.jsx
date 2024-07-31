@@ -22,17 +22,19 @@ const App = () => {
   };
 
   const Content = ({ course }) => {
+    const Part = ({ part }) => {
+      return (
+        <p>
+          {part.name} {part.exercises}
+        </p>
+      );
+    };
+
     return (
       <div>
-        <p>
-          {course.parts[0].name} {course.parts[0].exercises}
-        </p>
-        <p>
-          {course.parts[1].name} {course.parts[1].exercises}
-        </p>
-        <p>
-          {course.parts[2].name} {course.parts[2].exercises}
-        </p>
+        <Part part={course.parts[0]} />
+        <Part part={course.parts[1]} />
+        <Part part={course.parts[2]} />
       </div>
     );
   };
