@@ -18,11 +18,13 @@ const App = () => {
   };
 
   const Header = ({ course }) => {
+    //console.log(course);
     return <h1>{course.name}</h1>;
   };
 
   const Content = ({ course }) => {
     const Part = ({ part }) => {
+      console.log(part);
       return (
         <p>
           {part.name} {part.exercises}
