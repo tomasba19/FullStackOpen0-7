@@ -1,61 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
-import axios from "axios";
-
-// Filtros
-const Filter = ({ filter, onChange }) => {
-  return (
-    <div>
-      <div>
-        Filter shown with <input value={filter} onChange={onChange} />
-      </div>
-    </div>
-  );
-};
-
-// Lista de contactos
-const Numbers = ({ persons }) => {
-  return (
-    <div>
-      <h2>Contacts</h2>
-      <ul>
-        {persons.map((person) => (
-          <li key={person.id}>
-            {person.name} {person.number}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-//Agregar Contactos
-const Form = ({
-  addName,
-  handleNameChange,
-  handleNumberChange,
-  newName,
-  newNumber,
-}) => {
-  return (
-    <>
-      <div>
-        <h2>Add a New Contact</h2>
-      </div>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-    </>
-  );
-};
+import personService from "./services/person";
+import Filter from "./components/Filter";
+import Numbers from "./components/Numbers";
+import Form from "./components/Form";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const App = () => {
@@ -65,8 +13,8 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -88,11 +36,28 @@ const App = () => {
     const nameObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
     };
-    setPersons(persons.concat(nameObject));
-    setNewName("");
-    setNewNumber("");
+    personService.create(nameObject).then((returnedPerson) => {
+      setPersons(persons.concat(returnedPerson));
+      setNewName("");
+      setNewNumber("");
+    });
+  };
+
+  const deletePerson = (person) => {
+    console.log("Deleting :", person);
+    const result = window.confirm(`Delete ${person.name}?`);
+
+    if (result) {
+      personService
+        .remove(person.id)
+        .then(() => {
+          setPersons(persons.filter((p) => p.id !== person));
+        })
+        .catch((error) => {
+          console.error("Error deleting person:", error);
+        });
+    }
   };
 
   const filteredPersons = filter
@@ -123,7 +88,7 @@ const App = () => {
         newName={newName}
         newNumber={newNumber}
       />
-      <Numbers persons={filteredPersons} />
+      <Numbers persons={filteredPersons} onDelete={deletePerson} />
     </div>
   );
 };
