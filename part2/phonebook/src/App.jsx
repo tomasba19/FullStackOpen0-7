@@ -25,7 +25,21 @@ const App = () => {
       return;
     }
     if (persons.find((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
+      const result = window.confirm(`Update ${newName}'s number?`);
+      if (result) {
+        const person = persons.find((p) => p.name === newName);
+        const updatedPerson = { ...person, number: newNumber };
+        personService
+          .update(updatedPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== returnedPerson.id ? person : returnedPerson
+              )
+            );
+          });
+      }
+      setNewNumber("");
       setNewName("");
       return;
     } else if (persons.find((person) => person.number === newNumber)) {
@@ -53,6 +67,7 @@ const App = () => {
         .remove(person.id)
         .then(() => {
           setPersons(persons.filter((p) => p.id !== person));
+          return;
         })
         .catch((error) => {
           console.error("Error deleting person:", error);
