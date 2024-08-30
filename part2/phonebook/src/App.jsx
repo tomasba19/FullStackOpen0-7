@@ -4,13 +4,16 @@ import personService from "./services/person";
 import Filter from "./components/Filter";
 import Numbers from "./components/Numbers";
 import Form from "./components/Form";
-
+import Notification from "./components/Notification";
+import "./index.css";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
@@ -35,7 +38,11 @@ const App = () => {
             setPersons(
               persons.map((person) =>
                 person.id !== returnedPerson.id ? person : returnedPerson
-              )
+              ),
+              setSuccessMessage(`Updated ${returnedPerson.name}`),
+              setTimeout(() => {
+                setSuccessMessage(null);
+              }, 4000)
             );
           });
       }
@@ -53,6 +60,10 @@ const App = () => {
     };
     personService.create(nameObject).then((returnedPerson) => {
       setPersons(persons.concat(returnedPerson));
+      setSuccessMessage(`Added ${returnedPerson.name}`);
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 4000);
       setNewName("");
       setNewNumber("");
     });
@@ -70,7 +81,10 @@ const App = () => {
           return;
         })
         .catch((error) => {
-          console.error("Error deleting person:", error);
+          setErrorMessage(`${person.name} has already been removed from server`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
         });
     }
   };
@@ -95,6 +109,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successMessage} type="success"/>
+      <Notification message={errorMessage} type="error"/>
       <Filter filter={filter} onChange={handleFilterChange} />
       <Form
         addName={addName}
