@@ -1,0 +1,10 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.lista {
+  margin-right: 50px;
+  margin-top: 50px;
+}
