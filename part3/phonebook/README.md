@@ -1,1 +1,1 @@
-Deploy URL: https://fullstackopenpart3backend.onrender.com/api/persons
+Full Deploy URL: https://fullstackopenpart3backend.onrender.com/
